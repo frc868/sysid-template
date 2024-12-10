@@ -18,6 +18,8 @@ import static edu.wpi.first.units.Units.Volts;
 public class Arm extends SubsystemBase {
     private int CAN_ID;
     private CANSparkMax motor = new CANSparkMax(CAN_ID, MotorType.kBrushless);
+    private int CURRENT_LIMIT;
+    private double ENCODER_TO_RADIANS;
 
     private final MutableMeasure<Voltage> sysIdVoltage = MutableMeasure.mutable(Volts.of(0));
     private final MutableMeasure<Angle> sysIdPosition = MutableMeasure.mutable(Radians.of(0));
@@ -28,6 +30,11 @@ public class Arm extends SubsystemBase {
                         .angularPosition(sysIdPosition.mut_replace(getPosition(), Radians))
                         .angularVelocity(sysIdVelocity.mut_replace(getVelocity(), RadiansPerSecond));
             }, this));
+
+    public Arm() {
+        motor.setSmartCurrentLimit(CURRENT_LIMIT);
+        motor.getEncoder().setPositionConversionFactor(ENCODER_TO_RADIANS);
+    }
 
     private void setVoltage(double voltage) {
         motor.setVoltage(voltage);
